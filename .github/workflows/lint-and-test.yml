@@ -3,7 +3,7 @@ name: Golang Lint And Test
 on:
   pull_request:
     paths:
-      - 'app/**/*.go'
+      - 'api_server/**/*.go'
 
 jobs:
   Lint:
@@ -19,7 +19,7 @@ jobs:
           go-version: "1.23"
 
       - name: Install dependencies
-        working-directory: ./app
+        working-directory: ./api_server
         run: go mod tidy
 
       - name: Generate reviewdog api token
@@ -35,7 +35,7 @@ jobs:
       - name: lint
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ steps.generate_token.outputs.token }}
-        working-directory: ./app
+        working-directory: ./api_server
         run: go install honnef.co/go/tools/cmd/staticcheck@latest && staticcheck ./... | reviewdog -reporter=github-pr-review -f=staticcheck -level=warn -filter-mode=nofilter -fail-level=any
   
   Test:
@@ -62,7 +62,7 @@ jobs:
           go-version: "1.23"
 
       - name: Install dependencies
-        working-directory: ./app
+        working-directory: ./api_server
         run: |
           go mod tidy
           go install github.com/rubenv/sql-migrate/...@latest
@@ -71,16 +71,16 @@ jobs:
       - name: Copy env file
         run: |
           sudo mkdir /app
-          sudo cp ./app/.env.test /app/.env.test
+          sudo cp ./api_server/.env.test /app/.env.test
 
       - name: Setup test database
-        working-directory: ./app/db
+        working-directory: ./api_server/db
         run: godotenv -f /app/.env.test sql-migrate up -env="mysql"
 
       - name: test
-        working-directory: ./app
+        working-directory: ./api_server
         run: make run-test-ci
 
       - name: Build
-        working-directory: ./app
+        working-directory: ./api_server
         run: go build -v ./...
