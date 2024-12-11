@@ -71,7 +71,7 @@ jobs:
       - name: Copy env file
         run: |
           sudo mkdir /app
-          sudo cp .env.test /app/.env.test
+          sudo cp ./app/.env.test /app/.env.test
 
       - name: Setup test database
         working-directory: ./app/db
