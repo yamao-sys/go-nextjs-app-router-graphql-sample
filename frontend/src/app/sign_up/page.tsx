@@ -5,7 +5,12 @@ import { SignUpForm } from './_components/SignUpForm';
 const SignUpMutation = gql`
   mutation signUp($input: SignUpInput!) {
     signUp(input: $input) {
-      ...SignUp_User
+      user {
+        ...SignUp_User
+      }
+      validationErrors {
+        ...SignUp_ValidationError
+      }
     }
   }
 `;
@@ -15,6 +20,14 @@ const SignUpFragment = gql`
     id
     name
     email
+  }
+`;
+
+const SignUpValidationErrorFragment = gql`
+  fragment SignUp_ValidationError on SignUpValidationError {
+    name
+    email
+    password
   }
 `;
 

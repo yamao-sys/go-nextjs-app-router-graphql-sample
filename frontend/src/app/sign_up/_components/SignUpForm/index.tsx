@@ -5,19 +5,16 @@ import { SignUpInput } from '@/graphql/__generated__/graphql-schema-types';
 import { BoxInputForm } from '@/components/molucules/BoxInputForm';
 import { SubmitButton } from '@/components/molucules/SubmitButton';
 import { postSignUp } from '../../_actions';
+import { SignUp_ValidationErrorFragment } from '../../__generated__/page';
 
-// const INITIAL_VALIDATION_ERRORS = {
-//   name: [],
-//   email: [],
-//   password: [],
-// };
+const INITIAL_SIGN_UP_INPUT = {
+  name: '',
+  email: '',
+  password: '',
+};
 
 export const SignUpForm: FC = () => {
-  const [signUpInput, setSignInput] = useState<SignUpInput>({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const [signUpInput, setSignInput] = useState<SignUpInput>(INITIAL_SIGN_UP_INPUT);
 
   const updateSignUpInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignInput({
@@ -26,11 +23,16 @@ export const SignUpForm: FC = () => {
     });
   };
 
-  // const [validationErrors, setValidationErrors] =
-  //   useState<>(INITIAL_VALIDATION_ERRORS);
+  const [validationErrors, setValidationErrors] = useState<SignUp_ValidationErrorFragment>();
   const handleValidateSignUp = async () => {
     const res = await postSignUp({ input: signUpInput });
-    console.log(res);
+
+    setValidationErrors(res?.validationErrors);
+
+    if (res?.user?.id) {
+      window.alert('ユーザの登録に成功しました！');
+      setSignInput(INITIAL_SIGN_UP_INPUT);
+    }
   };
 
   return (
@@ -44,7 +46,7 @@ export const SignUpForm: FC = () => {
           name='name'
           value={signUpInput.name}
           onChange={updateSignUpInput}
-          validationErrorMessages={[]}
+          validationErrorMessages={validationErrors?.name ?? []}
           needsMargin={true}
         />
 
@@ -54,7 +56,7 @@ export const SignUpForm: FC = () => {
           name='email'
           value={signUpInput.email}
           onChange={updateSignUpInput}
-          validationErrorMessages={[]}
+          validationErrorMessages={validationErrors?.email ?? []}
           needsMargin={true}
         />
 
@@ -65,7 +67,7 @@ export const SignUpForm: FC = () => {
           type='password'
           value={signUpInput.password}
           onChange={updateSignUpInput}
-          validationErrorMessages={[]}
+          validationErrorMessages={validationErrors?.password ?? []}
           needsMargin={true}
         />
 

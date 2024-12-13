@@ -29,7 +29,7 @@ export type Mutation = {
   createTodo: Todo;
   deleteTodo: Scalars['ID']['output'];
   signIn: User;
-  signUp: User;
+  signUp: SignUpResponse;
   updateTodo: Todo;
 };
 
@@ -73,6 +73,19 @@ export type SignUpInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+export type SignUpResponse = {
+  __typename?: 'SignUpResponse';
+  user: User;
+  validationErrors: SignUpValidationError;
+};
+
+export type SignUpValidationError = {
+  __typename?: 'SignUpValidationError';
+  email: Array<Scalars['String']['output']>;
+  name: Array<Scalars['String']['output']>;
+  password: Array<Scalars['String']['output']>;
 };
 
 export type Todo = {

@@ -7,17 +7,12 @@ import { SignUpMutation, SignUpDocument, SignUpMutationVariables } from '../__ge
 export const postSignUp = async (params: SignUpMutationVariables) => {
   const client = await getClient();
 
-  const { errors } = await client.mutate<SignUpMutation>({
+  const { data } = await client.mutate<SignUpMutation>({
     mutation: SignUpDocument,
     variables: {
       input: params.input,
     },
   });
-  if (!!errors?.length) {
-    const error = errors[0];
-    if (error.extensions) {
-      return error.extensions['error'];
-    }
-  }
-  return {};
+
+  return data?.signUp;
 };

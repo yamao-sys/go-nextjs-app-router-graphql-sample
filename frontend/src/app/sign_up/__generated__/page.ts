@@ -9,10 +9,26 @@ export type SignUpMutationVariables = SchemaTypes.Exact<{
 
 export type SignUpMutation = {
   __typename?: 'Mutation';
-  signUp: { __typename?: 'User'; id: string; name: string; email: string };
+  signUp: {
+    __typename?: 'SignUpResponse';
+    user: { __typename?: 'User'; id: string; name: string; email: string };
+    validationErrors: {
+      __typename?: 'SignUpValidationError';
+      name: Array<string>;
+      email: Array<string>;
+      password: Array<string>;
+    };
+  };
 };
 
 export type SignUp_UserFragment = { __typename?: 'User'; id: string; name: string; email: string };
+
+export type SignUp_ValidationErrorFragment = {
+  __typename?: 'SignUpValidationError';
+  name: Array<string>;
+  email: Array<string>;
+  password: Array<string>;
+};
 
 export const SignUp_UserFragmentDoc = gql`
   fragment SignUp_User on User {
@@ -21,13 +37,26 @@ export const SignUp_UserFragmentDoc = gql`
     email
   }
 `;
+export const SignUp_ValidationErrorFragmentDoc = gql`
+  fragment SignUp_ValidationError on SignUpValidationError {
+    name
+    email
+    password
+  }
+`;
 export const SignUpDocument = gql`
   mutation signUp($input: SignUpInput!) {
     signUp(input: $input) {
-      ...SignUp_User
+      user {
+        ...SignUp_User
+      }
+      validationErrors {
+        ...SignUp_ValidationError
+      }
     }
   }
   ${SignUp_UserFragmentDoc}
+  ${SignUp_ValidationErrorFragmentDoc}
 `;
 export type SignUpMutationFn = Apollo.MutationFunction<SignUpMutation, SignUpMutationVariables>;
 
