@@ -62,6 +62,17 @@ type ComplexityRoot struct {
 		FetchTodoLists func(childComplexity int) int
 	}
 
+	SignUpResponse struct {
+		User             func(childComplexity int) int
+		ValidationErrors func(childComplexity int) int
+	}
+
+	SignUpValidationError struct {
+		Email    func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Password func(childComplexity int) int
+	}
+
 	Todo struct {
 		Content   func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
@@ -85,7 +96,7 @@ type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.CreateTodoInput) (*models.Todo, error)
 	UpdateTodo(ctx context.Context, id string, input model.UpdateTodoInput) (*models.Todo, error)
 	DeleteTodo(ctx context.Context, id string) (string, error)
-	SignUp(ctx context.Context, input model.SignUpInput) (*models.User, error)
+	SignUp(ctx context.Context, input model.SignUpInput) (*model.SignUpResponse, error)
 	SignIn(ctx context.Context, input model.SignInInput) (*models.User, error)
 }
 type QueryResolver interface {
@@ -201,6 +212,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.FetchTodoLists(childComplexity), true
+
+	case "SignUpResponse.user":
+		if e.complexity.SignUpResponse.User == nil {
+			break
+		}
+
+		return e.complexity.SignUpResponse.User(childComplexity), true
+
+	case "SignUpResponse.validationErrors":
+		if e.complexity.SignUpResponse.ValidationErrors == nil {
+			break
+		}
+
+		return e.complexity.SignUpResponse.ValidationErrors(childComplexity), true
+
+	case "SignUpValidationError.email":
+		if e.complexity.SignUpValidationError.Email == nil {
+			break
+		}
+
+		return e.complexity.SignUpValidationError.Email(childComplexity), true
+
+	case "SignUpValidationError.name":
+		if e.complexity.SignUpValidationError.Name == nil {
+			break
+		}
+
+		return e.complexity.SignUpValidationError.Name(childComplexity), true
+
+	case "SignUpValidationError.password":
+		if e.complexity.SignUpValidationError.Password == nil {
+			break
+		}
+
+		return e.complexity.SignUpValidationError.Password(childComplexity), true
 
 	case "Todo.content":
 		if e.complexity.Todo.Content == nil {
@@ -438,7 +484,7 @@ extend type Mutation {
 
 input SignUpInput {
 	name: String!
-	email: String! 
+	email: String!
 	password: String!
 }
 
@@ -447,12 +493,19 @@ input SignInInput {
 	password: String!
 }
 
-# extend type Query {
-# 	//
-# }
+type SignUpValidationError {
+	name: [String!]!
+	email: [String!]!
+	password: [String!]!
+}
+
+type SignUpResponse {
+	user: User!
+	validationErrors: SignUpValidationError!
+}
 
 extend type Mutation {
-	signUp(input: SignUpInput!): User!
+	signUp(input: SignUpInput!): SignUpResponse!
 	signIn(input: SignInInput!): User!
 }
 `, BuiltIn: false},
@@ -915,9 +968,9 @@ func (ec *executionContext) _Mutation_signUp(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.User)
+	res := resTmp.(*model.SignUpResponse)
 	fc.Result = res
-	return ec.marshalNUser2ᚖappᚋmodelsᚋgeneratedᚐUser(ctx, field.Selections, res)
+	return ec.marshalNSignUpResponse2ᚖappᚋgraphᚋmodelᚐSignUpResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signUp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -928,20 +981,12 @@ func (ec *executionContext) fieldContext_Mutation_signUp(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
-			case "email":
-				return ec.fieldContext_User_email(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_User_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "nameAndEmail":
-				return ec.fieldContext_User_nameAndEmail(ctx, field)
+			case "user":
+				return ec.fieldContext_SignUpResponse_user(ctx, field)
+			case "validationErrors":
+				return ec.fieldContext_SignUpResponse_validationErrors(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SignUpResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -1278,6 +1323,248 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignUpResponse_user(ctx context.Context, field graphql.CollectedField, obj *model.SignUpResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignUpResponse_user(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖappᚋmodelsᚋgeneratedᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignUpResponse_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignUpResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "nameAndEmail":
+				return ec.fieldContext_User_nameAndEmail(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignUpResponse_validationErrors(ctx context.Context, field graphql.CollectedField, obj *model.SignUpResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignUpResponse_validationErrors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidationErrors, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.SignUpValidationError)
+	fc.Result = res
+	return ec.marshalNSignUpValidationError2ᚖappᚋgraphᚋmodelᚐSignUpValidationError(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignUpResponse_validationErrors(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignUpResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_SignUpValidationError_name(ctx, field)
+			case "email":
+				return ec.fieldContext_SignUpValidationError_email(ctx, field)
+			case "password":
+				return ec.fieldContext_SignUpValidationError_password(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SignUpValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignUpValidationError_name(ctx context.Context, field graphql.CollectedField, obj *model.SignUpValidationError) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignUpValidationError_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignUpValidationError_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignUpValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignUpValidationError_email(ctx context.Context, field graphql.CollectedField, obj *model.SignUpValidationError) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignUpValidationError_email(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignUpValidationError_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignUpValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignUpValidationError_password(ctx context.Context, field graphql.CollectedField, obj *model.SignUpValidationError) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignUpValidationError_password(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Password, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignUpValidationError_password(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignUpValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3920,6 +4207,99 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
+var signUpResponseImplementors = []string{"SignUpResponse"}
+
+func (ec *executionContext) _SignUpResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SignUpResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signUpResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignUpResponse")
+		case "user":
+			out.Values[i] = ec._SignUpResponse_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "validationErrors":
+			out.Values[i] = ec._SignUpResponse_validationErrors(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var signUpValidationErrorImplementors = []string{"SignUpValidationError"}
+
+func (ec *executionContext) _SignUpValidationError(ctx context.Context, sel ast.SelectionSet, obj *model.SignUpValidationError) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signUpValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignUpValidationError")
+		case "name":
+			out.Values[i] = ec._SignUpValidationError_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "email":
+			out.Values[i] = ec._SignUpValidationError_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "password":
+			out.Values[i] = ec._SignUpValidationError_password(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var todoImplementors = []string{"Todo"}
 
 func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *models.Todo) graphql.Marshaler {
@@ -4666,6 +5046,30 @@ func (ec *executionContext) unmarshalNSignUpInput2appᚋgraphᚋmodelᚐSignUpIn
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNSignUpResponse2appᚋgraphᚋmodelᚐSignUpResponse(ctx context.Context, sel ast.SelectionSet, v model.SignUpResponse) graphql.Marshaler {
+	return ec._SignUpResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSignUpResponse2ᚖappᚋgraphᚋmodelᚐSignUpResponse(ctx context.Context, sel ast.SelectionSet, v *model.SignUpResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SignUpResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSignUpValidationError2ᚖappᚋgraphᚋmodelᚐSignUpValidationError(ctx context.Context, sel ast.SelectionSet, v *model.SignUpValidationError) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SignUpValidationError(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4679,6 +5083,38 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNTodo2appᚋmodelsᚋgeneratedᚐTodo(ctx context.Context, sel ast.SelectionSet, v models.Todo) graphql.Marshaler {

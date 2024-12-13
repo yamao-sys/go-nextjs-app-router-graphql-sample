@@ -13,6 +13,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -22,7 +23,7 @@ import (
 type TokenString = string
 
 type AuthService interface {
-	SignUp(ctx context.Context, requestParams model.SignUpInput) (*models.User, error)
+	SignUp(ctx context.Context, requestParams model.SignUpInput) (*model.SignUpResponse, error)
 	SignIn(ctx context.Context, requestParams model.SignInInput) (TokenString, *models.User, error)
 	GetAuthUser(ctx *gin.Context) (*models.User, error)
 	Getuser(ctx context.Context, id int) *models.User
@@ -36,11 +37,12 @@ func NewAuthService(db *sql.DB) AuthService {
 	return &authService{db}
 }
 
-func (as *authService) SignUp(ctx context.Context, requestParams model.SignUpInput) (*models.User, error) {
+func (as *authService) SignUp(ctx context.Context, requestParams model.SignUpInput) (*model.SignUpResponse, error) {
 	// NOTE: バリデーションチェック
 	validationErrors := validator.ValidateUser(requestParams)
 	if validationErrors != nil {
-		return &models.User{}, view.NewBadRequestView(validationErrors)
+		errors := as.NewValidationErrorView(validationErrors)
+		return  &model.SignUpResponse{ User: &models.User{}, ValidationErrors: errors }, nil
 	}
 
 	// NOTE: パラメータをアサイン
@@ -50,16 +52,16 @@ func (as *authService) SignUp(ctx context.Context, requestParams model.SignUpInp
 	// NOTE: パスワードをハッシュ化の上、Create処理
 	hashedPassword, err := as.encryptPassword(requestParams.Password)
 	if err != nil {
-		return &user, view.NewInternalServerErrorView(err)
+		return &model.SignUpResponse{ User: &user, ValidationErrors: &model.SignUpValidationError{} }, view.NewInternalServerErrorView(err)
 	}
 	user.Password = hashedPassword
 
 	createErr := user.Insert(ctx, as.db, boil.Infer())
 	if createErr != nil {
-		return &user, view.NewInternalServerErrorView(createErr)
+		return &model.SignUpResponse{ User: &user, ValidationErrors: &model.SignUpValidationError{} }, view.NewInternalServerErrorView(createErr)
 	}
 
-	return &user, nil
+	return &model.SignUpResponse{ User: &user, ValidationErrors: &model.SignUpValidationError{} }, nil
 }
 
 func (as *authService) SignIn(ctx context.Context, requestParams model.SignInInput) (TokenString, *models.User, error) {
@@ -134,4 +136,25 @@ func (as *authService) compareHashPassword(hashedPassword, requestPassword strin
 		return err
 	}
 	return nil
+}
+
+func (as *authService) NewValidationErrorView(err error) *model.SignUpValidationError {
+	validationErrors := model.SignUpValidationError{}
+
+	if errors, ok := err.(validation.Errors); ok {
+		// NOTE: レスポンス用の構造体にマッピング
+		for field, err := range errors {
+			messages := []string{err.Error()}
+			switch field {
+			case "name":
+				validationErrors.Name = messages
+			case "email":
+				validationErrors.Email = messages
+			case "password":
+				validationErrors.Password = messages
+			}
+		}
+	}
+
+	return &validationErrors
 }
