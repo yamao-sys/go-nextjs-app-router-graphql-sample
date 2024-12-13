@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 
 type Props = {
   labelText: string;
   color: 'green' | 'gray' | 'red';
   additionalStyle?: string;
-} & JSX.IntrinsicElements['button'];
+} & ComponentProps<'button'>;
 
 export const BaseButton = ({ labelText, color, additionalStyle = '', onClick }: Props) => {
   const buttonColorStyle = useMemo(() => {

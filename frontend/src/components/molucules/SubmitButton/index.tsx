@@ -1,13 +1,13 @@
 'use client';
 
 import { BaseButton } from '@/components/atoms/BaseButton';
-import { FC, memo } from 'react';
+import { ComponentProps, FC, memo } from 'react';
 
 type Props = {
   labelText: string;
   color: 'green' | 'gray' | 'red';
   additionalStyle?: string;
-} & JSX.IntrinsicElements['button'];
+} & ComponentProps<'button'>;
 
 export const SubmitButton: FC<Props> = memo<Props>(function SubmitButton({
   labelText,

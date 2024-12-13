@@ -1,14 +1,14 @@
 'use client';
 
 import { BaseFormBox } from '@/components/atoms/BaseFormBox';
-import { FC, memo } from 'react';
+import { ComponentProps, FC, memo } from 'react';
 
 type Props = {
   labelText: string;
   labelId: string;
   validationErrorMessages: string[];
   needsMargin: boolean;
-} & JSX.IntrinsicElements['input'];
+} & ComponentProps<'input'>;
 
 export const BoxInputForm: FC<Props> = memo(function BoxInputForm({
   labelText,
