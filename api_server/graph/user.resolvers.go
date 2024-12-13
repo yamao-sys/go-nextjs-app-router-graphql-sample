@@ -13,7 +13,7 @@ import (
 )
 
 // SignUp is the resolver for the signUp field.
-func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) (*models.User, error) {
+func (r *mutationResolver) SignUp(ctx context.Context, input model.SignUpInput) (*model.SignUpResponse, error) {
 	return r.authService.SignUp(ctx, input)
 }
 

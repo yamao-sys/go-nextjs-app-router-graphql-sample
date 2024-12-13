@@ -44,10 +44,17 @@ func (s *TestUserResolverSuite) TestSignUp() {
                 email: "test@example.com",
                 password: "password"
             }) {
-                id,
-                name,
-                email,
-                nameAndEmail
+                user {
+					id,
+					name,
+					email,
+					nameAndEmail
+				},
+				validationErrors {
+					name,
+					email,
+					password
+				}
             }
         }`,
 	}
@@ -78,10 +85,17 @@ func (s *TestUserResolverSuite) TestSignUp_ValidationError() {
                 email: "",
                 password: "password"
             }) {
-                id,
-                name,
-                email,
-                nameAndEmail
+                user {
+					id,
+					name,
+					email,
+					nameAndEmail
+				},
+				validationErrors {
+					name,
+					email,
+					password
+				}
             }
         }`,
 	}
@@ -92,10 +106,7 @@ func (s *TestUserResolverSuite) TestSignUp_ValidationError() {
 	testUserGraphQLServerHandler.ServeHTTP(res, req)
 
 	assert.Equal(s.T(), 200, res.Code)
-	responseBody := make(map[string]([1]map[string]map[string]interface{}))
-	_ = json.Unmarshal(res.Body.Bytes(), &responseBody)
-	assert.Equal(s.T(), float64(400), responseBody["errors"][0]["extensions"]["code"])
-	assert.Contains(s.T(), responseBody["errors"][0]["extensions"]["error"], "email")
+	assert.Contains(s.T(), res.Body.String(), "\"validationErrors\":{\"name\":[],\"email\":[\"Emailは必須入力です。\"],\"password\":[]}")
 
 	// NOTE: ユーザが作成されていないことを確認
 	isExistUser, _ := models.Users(

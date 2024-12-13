@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	models "app/models/generated"
+)
+
 type CreateTodoInput struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
@@ -22,6 +26,17 @@ type SignUpInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type SignUpResponse struct {
+	User             *models.User           `json:"user"`
+	ValidationErrors *SignUpValidationError `json:"validationErrors"`
+}
+
+type SignUpValidationError struct {
+	Name     []string `json:"name"`
+	Email    []string `json:"email"`
+	Password []string `json:"password"`
 }
 
 type UpdateTodoInput struct {

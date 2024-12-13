@@ -48,9 +48,11 @@ func (s *TestAuthServiceSuite) TestSignUp() {
 func (s *TestAuthServiceSuite) TestSignUp_ValidationError() {
 	requestParams := model.SignUpInput{Name: "test name 1", Email: "", Password: "password"}
 
-	_, err := testAuthService.SignUp(ctx, requestParams)
+	res, _ := testAuthService.SignUp(ctx, requestParams)
 
-	assert.NotNil(s.T(), err)
+	assert.Len(s.T(), res.ValidationErrors.Name, 0)
+	assert.Len(s.T(), res.ValidationErrors.Email, 1)
+	assert.Len(s.T(), res.ValidationErrors.Password, 0)
 
 	// NOTE: ユーザが作成されていないことを確認
 	isExistUser, _ := models.Users(
