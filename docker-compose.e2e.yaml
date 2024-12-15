@@ -1,0 +1,50 @@
+version: '3.9'
+services:
+  api_server:
+    container_name: api_server
+    build:
+      context: ./api_server
+    volumes:
+      - ./api_server:/app
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+    tty: true # コンテナの永続化
+    environment:
+      - TZ=Asia/Tokyo
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/src
+    ports:
+      - 3003:3000
+    environment:
+      - DISPLAY=0
+      - WATCHPACK_POLLING=true
+    restart: always
+    tty: true
+    stdin_open: true
+
+  db:
+    image: mysql:8.0.28
+    container_name: db
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=go_nextjs_graphql_practice_test
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql:/var/lib/mysql
+
+  e2e:
+    build: ./e2e
+    volumes:
+      - ./e2e:/app
+    depends_on:
+      - api_server
+      - frontend
+      - db
