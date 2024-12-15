@@ -22,5 +22,5 @@ test('SignIn Successfully', async ({ page }) => {
   await page.getByRole('button', { name: 'ログインする' }).click();
 
   await page.waitForURL('/');
-  expect(page.url()).toBe('http://frontend:3001/');
+  expect(page).toHaveURL('/');
 });
