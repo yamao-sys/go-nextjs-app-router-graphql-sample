@@ -44,7 +44,7 @@ jobs:
 
       - name: Boot API Server
         working-directory: ./api_server
-        run: godotenv -f /app/.env.test go run server.go
+        run: godotenv -f /app/.env.test go run server.go &
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -57,7 +57,7 @@ jobs:
 
       - name: Boot Frontend server
         working-directory: ./frontend
-        run: NODE_ENV=test PORT=3001 npm run dev
+        run: NODE_ENV=test PORT=3001 npm run dev &
 
       - name: Install dependencies
         working-directory: ./e2e
