@@ -21,10 +21,11 @@ import (
 )
 
 type TokenString = string
+type SignInValidationError = error
 
 type AuthService interface {
 	SignUp(ctx context.Context, requestParams model.SignUpInput) (*model.SignUpResponse, error)
-	SignIn(ctx context.Context, requestParams model.SignInInput) (TokenString, *models.User, error)
+	SignIn(ctx context.Context, requestParams model.SignInInput) (TokenString, SignInValidationError, error)
 	GetAuthUser(ctx *gin.Context) (*models.User, error)
 	Getuser(ctx context.Context, id int) *models.User
 }
@@ -64,16 +65,16 @@ func (as *authService) SignUp(ctx context.Context, requestParams model.SignUpInp
 	return &model.SignUpResponse{ User: &user, ValidationErrors: &model.SignUpValidationError{} }, nil
 }
 
-func (as *authService) SignIn(ctx context.Context, requestParams model.SignInInput) (TokenString, *models.User, error) {
+func (as *authService) SignIn(ctx context.Context, requestParams model.SignInInput) (TokenString, SignInValidationError, error) {
 	// NOTE: emailからユーザの取得
 	user, err := models.Users(qm.Where("email = ?", requestParams.Email)).One(ctx, as.db)
 	if err != nil {
-		return "", &models.User{}, view.NewNotFoundView(fmt.Errorf("メールアドレスまたはパスワードに該当するユーザが存在しません。"))
+		return "", fmt.Errorf("メールアドレスまたはパスワードに該当するユーザが存在しません。"), nil
 	}
 
 	// NOTE: パスワードの照合
 	if err := as.compareHashPassword(user.Password, requestParams.Password); err != nil {
-		return "", &models.User{}, view.NewNotFoundView(fmt.Errorf("メールアドレスまたはパスワードに該当するユーザが存在しません。"))
+		return "", fmt.Errorf("メールアドレスまたはパスワードに該当するユーザが存在しません。"), nil
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user.ID,
@@ -82,9 +83,9 @@ func (as *authService) SignIn(ctx context.Context, requestParams model.SignInInp
 	// TODO: JWT_SECRETを環境変数に切り出す
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_TOKEN_KEY")))
 	if err != nil {
-		return "", &models.User{}, view.NewInternalServerErrorView(err)
+		return "", nil, view.NewInternalServerErrorView(err)
 	}
-	return tokenString, user, nil
+	return tokenString, nil, nil
 }
 
 func (as *authService) GetAuthUser(ctx *gin.Context) (*models.User, error) {

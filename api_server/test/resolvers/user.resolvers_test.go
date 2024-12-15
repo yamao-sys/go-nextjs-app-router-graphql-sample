@@ -129,10 +129,7 @@ func (s *TestUserResolverSuite) TestSignIn() {
                 email: "test@example.com",
                 password: "password"
             }) {
-                id,
-                name,
-                email,
-                nameAndEmail
+                validationError
             }
         }`,
 	}
@@ -143,6 +140,7 @@ func (s *TestUserResolverSuite) TestSignIn() {
 	testUserGraphQLServerHandler.ServeHTTP(res, req)
 
 	assert.Equal(s.T(), 200, res.Code)
+	assert.NotEmpty(s.T(), res.Header().Get("Set-Cookie"))
 }
 
 func TestUserResolver(t *testing.T) {

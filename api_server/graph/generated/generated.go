@@ -62,6 +62,10 @@ type ComplexityRoot struct {
 		FetchTodoLists func(childComplexity int) int
 	}
 
+	SignInResponse struct {
+		ValidationError func(childComplexity int) int
+	}
+
 	SignUpResponse struct {
 		User             func(childComplexity int) int
 		ValidationErrors func(childComplexity int) int
@@ -97,7 +101,7 @@ type MutationResolver interface {
 	UpdateTodo(ctx context.Context, id string, input model.UpdateTodoInput) (*models.Todo, error)
 	DeleteTodo(ctx context.Context, id string) (string, error)
 	SignUp(ctx context.Context, input model.SignUpInput) (*model.SignUpResponse, error)
-	SignIn(ctx context.Context, input model.SignInInput) (*models.User, error)
+	SignIn(ctx context.Context, input model.SignInInput) (*model.SignInResponse, error)
 }
 type QueryResolver interface {
 	FetchTodo(ctx context.Context, id string) (*models.Todo, error)
@@ -212,6 +216,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.FetchTodoLists(childComplexity), true
+
+	case "SignInResponse.validationError":
+		if e.complexity.SignInResponse.ValidationError == nil {
+			break
+		}
+
+		return e.complexity.SignInResponse.ValidationError(childComplexity), true
 
 	case "SignUpResponse.user":
 		if e.complexity.SignUpResponse.User == nil {
@@ -504,9 +515,13 @@ type SignUpResponse {
 	validationErrors: SignUpValidationError!
 }
 
+type SignInResponse {
+	validationError: String!
+}
+
 extend type Mutation {
 	signUp(input: SignUpInput!): SignUpResponse!
-	signIn(input: SignInInput!): User!
+	signIn(input: SignInInput!): SignInResponse!
 }
 `, BuiltIn: false},
 }
@@ -1029,9 +1044,9 @@ func (ec *executionContext) _Mutation_signIn(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.User)
+	res := resTmp.(*model.SignInResponse)
 	fc.Result = res
-	return ec.marshalNUser2ᚖappᚋmodelsᚋgeneratedᚐUser(ctx, field.Selections, res)
+	return ec.marshalNSignInResponse2ᚖappᚋgraphᚋmodelᚐSignInResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_signIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1042,20 +1057,10 @@ func (ec *executionContext) fieldContext_Mutation_signIn(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
-			case "email":
-				return ec.fieldContext_User_email(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_User_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_User_updatedAt(ctx, field)
-			case "nameAndEmail":
-				return ec.fieldContext_User_nameAndEmail(ctx, field)
+			case "validationError":
+				return ec.fieldContext_SignInResponse_validationError(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type SignInResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -1323,6 +1328,50 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SignInResponse_validationError(ctx context.Context, field graphql.CollectedField, obj *model.SignInResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_SignInResponse_validationError(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidationError, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_SignInResponse_validationError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SignInResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4207,6 +4256,45 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
+var signInResponseImplementors = []string{"SignInResponse"}
+
+func (ec *executionContext) _SignInResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SignInResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, signInResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SignInResponse")
+		case "validationError":
+			out.Values[i] = ec._SignInResponse_validationError(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var signUpResponseImplementors = []string{"SignUpResponse"}
 
 func (ec *executionContext) _SignUpResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SignUpResponse) graphql.Marshaler {
@@ -5039,6 +5127,20 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 func (ec *executionContext) unmarshalNSignInInput2appᚋgraphᚋmodelᚐSignInInput(ctx context.Context, v interface{}) (model.SignInInput, error) {
 	res, err := ec.unmarshalInputSignInInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSignInResponse2appᚋgraphᚋmodelᚐSignInResponse(ctx context.Context, sel ast.SelectionSet, v model.SignInResponse) graphql.Marshaler {
+	return ec._SignInResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSignInResponse2ᚖappᚋgraphᚋmodelᚐSignInResponse(ctx context.Context, sel ast.SelectionSet, v *model.SignInResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SignInResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNSignUpInput2appᚋgraphᚋmodelᚐSignUpInput(ctx context.Context, v interface{}) (model.SignUpInput, error) {

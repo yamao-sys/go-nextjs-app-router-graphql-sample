@@ -29,7 +29,11 @@ type SignUpResponse {
 	validationErrors: SignUpValidationError!
 }
 
+type SignInResponse {
+	validationError: String!
+}
+
 extend type Mutation {
 	signUp(input: SignUpInput!): SignUpResponse!
-	signIn(input: SignInInput!): User!
+	signIn(input: SignInInput!): SignInResponse!
 }
