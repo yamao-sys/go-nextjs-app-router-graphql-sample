@@ -7,22 +7,25 @@ services:
     volumes:
       - ./api_server:/app
     ports:
-      - 8081:8080
+      - 8081:8081
     depends_on:
       - db
     tty: true # コンテナの永続化
     environment:
       - TZ=Asia/Tokyo
+    command: godotenv -f .env.test.local go run server.go
 
   frontend:
     build: ./frontend
     volumes:
       - ./frontend/src:/src
     ports:
-      - 3003:3000
+      - 3003:3001
     environment:
       - DISPLAY=0
       - WATCHPACK_POLLING=true
+      - NODE_ENV=test
+      - PORT=3001
     restart: always
     tty: true
     stdin_open: true
@@ -48,3 +51,4 @@ services:
       - api_server
       - frontend
       - db
+    entrypoint: ./entrypoint.sh
