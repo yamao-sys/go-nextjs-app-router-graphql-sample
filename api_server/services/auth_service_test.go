@@ -70,9 +70,10 @@ func (s *TestAuthServiceSuite) TestSignIn() {
 
 	requestParams := model.SignInInput{Email: "test@example.com", Password: "password"}
 
-	token, _, err := testAuthService.SignIn(ctx, requestParams)
+	token, validationError, err := testAuthService.SignIn(ctx, requestParams)
 
 	assert.NotNil(s.T(), token)
+	assert.Nil(s.T(), validationError)
 	assert.Nil(s.T(), err)
 }
 
@@ -85,10 +86,11 @@ func (s *TestAuthServiceSuite) TestSignIn_NotFoundError() {
 
 	requestParams := model.SignInInput{Email: "test_1@example.com", Password: "password"}
 
-	token, _, err := testAuthService.SignIn(ctx, requestParams)
+	token, validationError, err := testAuthService.SignIn(ctx, requestParams)
 
 	assert.Empty(s.T(), token)
-	assert.NotNil(s.T(), err)
+	assert.NotNil(s.T(), validationError)
+	assert.Nil(s.T(), err)
 }
 
 func TestAuthService(t *testing.T) {

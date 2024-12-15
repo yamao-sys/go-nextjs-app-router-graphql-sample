@@ -22,6 +22,10 @@ type SignInInput struct {
 	Password string `json:"password"`
 }
 
+type SignInResponse struct {
+	ValidationError string `json:"validationError"`
+}
+
 type SignUpInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
