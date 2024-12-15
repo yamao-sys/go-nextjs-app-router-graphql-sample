@@ -71,7 +71,7 @@ export const SignUpForm: FC = () => {
           needsMargin={true}
         />
 
-        <SubmitButton labelText='確認画面へ' color='green' onClick={handleValidateSignUp} />
+        <SubmitButton labelText='登録する' color='green' onClick={handleValidateSignUp} />
       </div>
     </div>
   );

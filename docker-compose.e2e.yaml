@@ -1,0 +1,54 @@
+version: '3.9'
+services:
+  api_server:
+    container_name: api_server
+    build:
+      context: ./api_server
+    volumes:
+      - ./api_server:/app
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+    tty: true # コンテナの永続化
+    environment:
+      - TZ=Asia/Tokyo
+    command: godotenv -f .env.test.local go run server.go
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/src
+    ports:
+      - 3001:3001
+    environment:
+      - DISPLAY=0
+      - WATCHPACK_POLLING=true
+      - NODE_ENV=test
+      - PORT=3001
+    restart: always
+    tty: true
+    stdin_open: true
+
+  db:
+    image: mysql:8.0.28
+    container_name: db
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=go_nextjs_graphql_practice_test
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql:/var/lib/mysql
+
+  e2e:
+    build: ./e2e
+    volumes:
+      - ./e2e:/app
+    depends_on:
+      - api_server
+      - frontend
+      - db
+    entrypoint: ./entrypoint.sh
