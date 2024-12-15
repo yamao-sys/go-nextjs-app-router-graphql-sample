@@ -28,7 +28,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createTodo: Todo;
   deleteTodo: Scalars['ID']['output'];
-  signIn: User;
+  signIn: SignInResponse;
   signUp: SignUpResponse;
   updateTodo: Todo;
 };
@@ -67,6 +67,11 @@ export type QueryFetchTodoArgs = {
 export type SignInInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+export type SignInResponse = {
+  __typename?: 'SignInResponse';
+  validationError: Scalars['String']['output'];
 };
 
 export type SignUpInput = {

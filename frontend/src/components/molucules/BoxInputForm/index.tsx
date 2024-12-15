@@ -2,6 +2,7 @@
 
 import { BaseFormBox } from '@/components/atoms/BaseFormBox';
 import { ComponentProps, FC, memo } from 'react';
+import { ValidationErrorMessages } from '../ValidationErrorMessages';
 
 type Props = {
   labelText: string;
@@ -36,13 +37,8 @@ export const BoxInputForm: FC<Props> = memo(function BoxInputForm({
         value={value}
         onChange={onChange}
       />
-      <div className='w-full pt-5 text-left'>
-        {validationErrorMessages.map((message, i) => (
-          <p key={i} className='text-red-400'>
-            {message}
-          </p>
-        ))}
-      </div>
+
+      <ValidationErrorMessages messages={validationErrorMessages} />
     </BaseFormBox>
   );
 });
