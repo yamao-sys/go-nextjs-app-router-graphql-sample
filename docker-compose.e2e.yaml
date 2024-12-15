@@ -20,7 +20,7 @@ services:
     volumes:
       - ./frontend/src:/src
     ports:
-      - 3003:3001
+      - 3001:3001
     environment:
       - DISPLAY=0
       - WATCHPACK_POLLING=true
