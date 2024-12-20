@@ -51,6 +51,10 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Boot Frontend server
+        working-directory: ./frontend/src
+        run: NODE_ENV=test PORT=3001 npm run dev &
+
       - name: Install Frontend dependencies
         working-directory: ./frontend/src
         run: |
