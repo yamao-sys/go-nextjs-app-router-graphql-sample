@@ -11,7 +11,8 @@
     "format": "prettier  --check './**/*.{ts,tsx}'",
     "format:fix": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
     "tsc": "tsc --noEmit",
-    "gql-codegen": "graphql-codegen --config gql-codegen.ts"
+    "gql-codegen": "graphql-codegen --config gql-codegen.ts",
+    "test": "playwright test"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
@@ -27,6 +28,7 @@
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "^4.1.2",
     "@graphql-codegen/typescript-operations": "^4.4.0",
+    "@playwright/test": "^1.49.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
