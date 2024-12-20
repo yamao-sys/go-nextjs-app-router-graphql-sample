@@ -9,6 +9,7 @@ import path from 'path';
 
 const envFilePath = process.env.CI ? '.env.test' : '.env';
 dotenv.config({ path: path.resolve(__dirname, envFilePath) });
+console.log(process.env.CI);
 
 /**
  * See https://playwright.dev/docs/test-configuration.
