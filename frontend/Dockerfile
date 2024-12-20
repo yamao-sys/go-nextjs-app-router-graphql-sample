@@ -1,5 +1,11 @@
-FROM node:22-alpine
+FROM node:22-bookworm
 
 WORKDIR /src
 
-CMD sh -c "npm install && npm run dev"
+COPY ./src/package.json /src/package.json
+
+RUN npm install
+RUN npx playwright install
+RUN npx playwright install-deps 
+
+CMD sh -c "npm run dev"

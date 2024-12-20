@@ -59,16 +59,12 @@ jobs:
         working-directory: ./frontend/src
         run: NODE_ENV=test PORT=3001 npm run dev &
 
-      - name: Install dependencies
-        working-directory: ./e2e
-        run: npm ci
-
-      - name: Install Playwright Browsers
-        working-directory: ./e2e
+      - name: Install Frontend dependencies
+        working-directory: ./frontend/src
         run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        working-directory: ./e2e
+      - name: Run E2E
+        working-directory: ./frontend/src
         env:
           CI: true
         run: npm run test
