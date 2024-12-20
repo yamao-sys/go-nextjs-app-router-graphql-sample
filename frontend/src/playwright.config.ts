@@ -8,6 +8,8 @@ import { defineConfig, devices } from '@playwright/test';
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+console.log(process.env.API_ENDPOINT_URI);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -78,6 +80,6 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     port: 3001,
-    // reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !process.env.CI,
   },
 });
