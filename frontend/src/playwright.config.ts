@@ -10,9 +10,6 @@ import path from 'path';
 const envFilePath = process.env.CI ? '.env.test' : '.env';
 dotenv.config({ path: path.resolve(__dirname, envFilePath) });
 
-console.log(process.env.NODE_ENV);
-console.log(process.env.API_ENDPOINT_URI);
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -31,7 +28,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3001',
+    baseURL: process.env.CI ? 'http://127.0.0.1:3001' : 'http://localhost:3001',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
