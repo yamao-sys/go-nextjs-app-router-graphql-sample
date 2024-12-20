@@ -51,15 +51,17 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Install Frontend dependencies
+        working-directory: ./frontend/src
+        run: npm install
+
       - name: Boot Frontend server
         working-directory: ./frontend/src
         run: NODE_ENV=test PORT=3001 npm run dev &
 
       - name: Install Frontend dependencies
         working-directory: ./frontend/src
-        run: |
-          npm install
-          npx playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Run E2E
         working-directory: ./frontend/src
