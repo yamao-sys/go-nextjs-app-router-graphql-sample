@@ -57,11 +57,10 @@ jobs:
           npm install
           npx playwright install --with-deps
 
-      - name: Boot Frontend server
+      - name: Run E2E
         working-directory: ./frontend/src
         env:
           CI: true
-          NODE_ENV: test
         run: npm run test
 
       - uses: actions/upload-artifact@v4
