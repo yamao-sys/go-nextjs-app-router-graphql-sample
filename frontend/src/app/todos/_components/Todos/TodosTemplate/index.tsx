@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { fetchTodoLists } from '@/app/todos/_actions/todo';
 import { gql } from '@apollo/client';
 import { FC } from 'react';
 import { TodosList } from '../TodosList';
 
-const fetchTodoListsQuery = gql`
+gql`
   query fetchTodoLists {
     fetchTodoLists {
       ...TodosList_Todo

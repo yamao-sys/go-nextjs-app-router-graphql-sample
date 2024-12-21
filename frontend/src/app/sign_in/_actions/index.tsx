@@ -1,7 +1,11 @@
 'use server';
 
 import { getClient } from '@/configs/apolloClient';
-import { SignInMutation, SignInDocument, SignInMutationVariables } from '../__generated__/page';
+import {
+  SignInDocument,
+  SignInMutation,
+  SignInMutationVariables,
+} from '../_components/SignInForm/__generated__';
 
 export const postSignIn = async (params: SignInMutationVariables) => {
   const client = await getClient();
