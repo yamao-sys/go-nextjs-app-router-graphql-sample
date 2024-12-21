@@ -12,7 +12,7 @@
     "format:fix": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
     "tsc": "tsc --noEmit",
     "gql-codegen": "graphql-codegen --config gql-codegen.ts",
-    "test": "playwright test"
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
