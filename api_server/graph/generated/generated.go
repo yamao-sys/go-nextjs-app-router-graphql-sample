@@ -53,6 +53,16 @@ type ComplexityRoot struct {
 		IsSignedIn func(childComplexity int) int
 	}
 
+	CreateTodoResponse struct {
+		ID               func(childComplexity int) int
+		ValidationErrors func(childComplexity int) int
+	}
+
+	CreateTodoValidationError struct {
+		Content func(childComplexity int) int
+		Title   func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateTodo func(childComplexity int, input model.CreateTodoInput) int
 		DeleteTodo func(childComplexity int, id string) int
@@ -102,7 +112,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateTodo(ctx context.Context, input model.CreateTodoInput) (*models.Todo, error)
+	CreateTodo(ctx context.Context, input model.CreateTodoInput) (*model.CreateTodoResponse, error)
 	UpdateTodo(ctx context.Context, id string, input model.UpdateTodoInput) (*models.Todo, error)
 	DeleteTodo(ctx context.Context, id string) (string, error)
 	SignUp(ctx context.Context, input model.SignUpInput) (*model.SignUpResponse, error)
@@ -150,6 +160,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CheckSignedInResponse.IsSignedIn(childComplexity), true
+
+	case "CreateTodoResponse.id":
+		if e.complexity.CreateTodoResponse.ID == nil {
+			break
+		}
+
+		return e.complexity.CreateTodoResponse.ID(childComplexity), true
+
+	case "CreateTodoResponse.validationErrors":
+		if e.complexity.CreateTodoResponse.ValidationErrors == nil {
+			break
+		}
+
+		return e.complexity.CreateTodoResponse.ValidationErrors(childComplexity), true
+
+	case "CreateTodoValidationError.content":
+		if e.complexity.CreateTodoValidationError.Content == nil {
+			break
+		}
+
+		return e.complexity.CreateTodoValidationError.Content(childComplexity), true
+
+	case "CreateTodoValidationError.title":
+		if e.complexity.CreateTodoValidationError.Title == nil {
+			break
+		}
+
+		return e.complexity.CreateTodoValidationError.Title(childComplexity), true
 
 	case "Mutation.createTodo":
 		if e.complexity.Mutation.CreateTodo == nil {
@@ -493,13 +531,23 @@ input UpdateTodoInput {
 	content: String!
 }
 
+type CreateTodoValidationError {
+	title: [String!]!
+	content: [String!]!
+}
+
+type CreateTodoResponse {
+	id: ID!
+	validationErrors: CreateTodoValidationError!
+}
+
 extend type Query {
 	fetchTodo(id: ID!): Todo!
 	fetchTodoLists: [Todo!]!
 }
 
 extend type Mutation {
-	createTodo(input: CreateTodoInput!): Todo!
+	createTodo(input: CreateTodoInput!): CreateTodoResponse!
 	updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
 	deleteTodo(id: ID!): ID!
 }
@@ -836,6 +884,188 @@ func (ec *executionContext) fieldContext_CheckSignedInResponse_isSignedIn(_ cont
 	return fc, nil
 }
 
+func (ec *executionContext) _CreateTodoResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.CreateTodoResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateTodoResponse_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateTodoResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateTodoResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateTodoResponse_validationErrors(ctx context.Context, field graphql.CollectedField, obj *model.CreateTodoResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateTodoResponse_validationErrors(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidationErrors, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.CreateTodoValidationError)
+	fc.Result = res
+	return ec.marshalNCreateTodoValidationError2ᚖappᚋgraphᚋmodelᚐCreateTodoValidationError(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateTodoResponse_validationErrors(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateTodoResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "title":
+				return ec.fieldContext_CreateTodoValidationError_title(ctx, field)
+			case "content":
+				return ec.fieldContext_CreateTodoValidationError_content(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreateTodoValidationError", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateTodoValidationError_title(ctx context.Context, field graphql.CollectedField, obj *model.CreateTodoValidationError) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateTodoValidationError_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateTodoValidationError_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateTodoValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateTodoValidationError_content(ctx context.Context, field graphql.CollectedField, obj *model.CreateTodoValidationError) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateTodoValidationError_content(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateTodoValidationError_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateTodoValidationError",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createTodo(ctx, field)
 	if err != nil {
@@ -862,9 +1092,9 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Todo)
+	res := resTmp.(*model.CreateTodoResponse)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖappᚋmodelsᚋgeneratedᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNCreateTodoResponse2ᚖappᚋgraphᚋmodelᚐCreateTodoResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -876,19 +1106,11 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Todo_title(ctx, field)
-			case "content":
-				return ec.fieldContext_Todo_content(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Todo_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Todo_updatedAt(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
+				return ec.fieldContext_CreateTodoResponse_id(ctx, field)
+			case "validationErrors":
+				return ec.fieldContext_CreateTodoResponse_validationErrors(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CreateTodoResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -4244,6 +4466,94 @@ func (ec *executionContext) _CheckSignedInResponse(ctx context.Context, sel ast.
 	return out
 }
 
+var createTodoResponseImplementors = []string{"CreateTodoResponse"}
+
+func (ec *executionContext) _CreateTodoResponse(ctx context.Context, sel ast.SelectionSet, obj *model.CreateTodoResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createTodoResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateTodoResponse")
+		case "id":
+			out.Values[i] = ec._CreateTodoResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "validationErrors":
+			out.Values[i] = ec._CreateTodoResponse_validationErrors(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var createTodoValidationErrorImplementors = []string{"CreateTodoValidationError"}
+
+func (ec *executionContext) _CreateTodoValidationError(ctx context.Context, sel ast.SelectionSet, obj *model.CreateTodoValidationError) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createTodoValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateTodoValidationError")
+		case "title":
+			out.Values[i] = ec._CreateTodoValidationError_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "content":
+			out.Values[i] = ec._CreateTodoValidationError_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -5272,6 +5582,30 @@ func (ec *executionContext) marshalNCheckSignedInResponse2ᚖappᚋgraphᚋmodel
 func (ec *executionContext) unmarshalNCreateTodoInput2appᚋgraphᚋmodelᚐCreateTodoInput(ctx context.Context, v interface{}) (model.CreateTodoInput, error) {
 	res, err := ec.unmarshalInputCreateTodoInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNCreateTodoResponse2appᚋgraphᚋmodelᚐCreateTodoResponse(ctx context.Context, sel ast.SelectionSet, v model.CreateTodoResponse) graphql.Marshaler {
+	return ec._CreateTodoResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCreateTodoResponse2ᚖappᚋgraphᚋmodelᚐCreateTodoResponse(ctx context.Context, sel ast.SelectionSet, v *model.CreateTodoResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateTodoResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCreateTodoValidationError2ᚖappᚋgraphᚋmodelᚐCreateTodoValidationError(ctx context.Context, sel ast.SelectionSet, v *model.CreateTodoValidationError) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateTodoValidationError(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNDateTime2string(ctx context.Context, v interface{}) (string, error) {

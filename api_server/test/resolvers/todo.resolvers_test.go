@@ -45,11 +45,10 @@ func (s *TestTodoResolverSuite) TestCreateTodo_Unauthorized() {
                 title: "test title 1",
                 content: "",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -82,11 +81,10 @@ func (s *TestTodoResolverSuite) TestCreateTodo() {
                 title: "test title 1",
                 content: "",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -98,9 +96,7 @@ func (s *TestTodoResolverSuite) TestCreateTodo() {
 	testTodoGraphQLServerHandler.ServeHTTP(res, req)
 
 	assert.Equal(s.T(), 200, res.Code)
-	responseBody := make(map[string]interface{})
-	_ = json.Unmarshal(res.Body.Bytes(), &responseBody)
-	assert.Contains(s.T(), responseBody["data"], "createTodo")
+	assert.Contains(s.T(), res.Body.String(), "\"validationErrors\":{\"title\":[],\"content\":[]}")
 
 	// NOTE: Todoリストが作成されていることを確認
 	isExistTodo, _ := models.Todos(
@@ -120,11 +116,10 @@ func (s *TestTodoResolverSuite) TestCreateTodo_ValidationError() {
                 title: "",
                 content: "",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -136,9 +131,7 @@ func (s *TestTodoResolverSuite) TestCreateTodo_ValidationError() {
 	testTodoGraphQLServerHandler.ServeHTTP(res, req)
 
 	assert.Equal(s.T(), 200, res.Code)
-	responseBody := make(map[string]([1]map[string]map[string]interface{}))
-	_ = json.Unmarshal(res.Body.Bytes(), &responseBody)
-	assert.Equal(s.T(), float64(400), responseBody["errors"][0]["extensions"]["code"])
+	assert.Contains(s.T(), res.Body.String(), "\"validationErrors\":{\"title\":[\"タイトルは必須入力です。\"],\"content\":[]}")
 
 	// NOTE: Todoリストが作成されていないことを確認
 	isExistTodo, _ := models.Todos(

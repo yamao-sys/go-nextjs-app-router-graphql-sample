@@ -10,13 +10,14 @@ import (
 
 	"app/validator"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type TodoService interface {
-	CreateTodo(ctx context.Context, requestParams model.CreateTodoInput, userID int) (*models.Todo, error)
+	CreateTodo(ctx context.Context, requestParams model.CreateTodoInput, userID int) (*model.CreateTodoResponse, error)
 	FetchTodoLists(ctx context.Context, userID int) ([]*models.Todo, error)
 	FetchTodo(ctx context.Context, id int, userID int) (*models.Todo, error)
 	UpdateTodo(ctx context.Context, id int, requestParams model.UpdateTodoInput, userID int) (*models.Todo, error)
@@ -31,11 +32,12 @@ func NewTodoService(db *sql.DB) TodoService {
 	return &todoService{db}
 }
 
-func (ts *todoService) CreateTodo(ctx context.Context, requestParams model.CreateTodoInput, userID int) (*models.Todo, error) {
+func (ts *todoService) CreateTodo(ctx context.Context, requestParams model.CreateTodoInput, userID int) (*model.CreateTodoResponse, error) {
 	// NOTE: バリデーションチェック
 	validationErrors := validator.ValidateCreateTodo(requestParams)
 	if validationErrors != nil {
-		return &models.Todo{}, view.NewBadRequestView(validationErrors)
+		errors := ts.NewValidationErrorView(validationErrors)
+		return &model.CreateTodoResponse{ ID: "", ValidationErrors: errors }, nil
 	}
 
 	todo := &models.Todo{}
@@ -46,9 +48,9 @@ func (ts *todoService) CreateTodo(ctx context.Context, requestParams model.Creat
 	// NOTE: Create処理
 	err := todo.Insert(ctx, ts.db, boil.Infer())
 	if err != nil {
-		return &models.Todo{}, view.NewInternalServerErrorView(err)
+		return &model.CreateTodoResponse{ ID: "", ValidationErrors: &model.CreateTodoValidationError{} }, view.NewInternalServerErrorView(err)
 	}
-	return todo, nil
+	return &model.CreateTodoResponse{ ID: strconv.Itoa(todo.ID), ValidationErrors: &model.CreateTodoValidationError{} }, nil
 }
 
 func (ts *todoService) FetchTodoLists(ctx context.Context, userID int) ([]*models.Todo, error) {
@@ -103,4 +105,23 @@ func (ts *todoService) DeleteTodo(ctx context.Context, id int, userID int) (stri
 		return strconv.Itoa(id), view.NewInternalServerErrorView(deleteError)
 	}
 	return strconv.Itoa(id), nil
+}
+
+func (ts *todoService) NewValidationErrorView(err error) *model.CreateTodoValidationError {
+	validationErrors := model.CreateTodoValidationError{}
+
+	if errors, ok := err.(validation.Errors); ok {
+		// NOTE: レスポンス用の構造体にマッピング
+		for field, err := range errors {
+			messages := []string{err.Error()}
+			switch field {
+			case "title":
+				validationErrors.Title = messages
+			case "content":
+				validationErrors.Content = messages
+			}
+		}
+	}
+
+	return &validationErrors
 }

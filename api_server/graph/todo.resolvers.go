@@ -17,10 +17,10 @@ import (
 )
 
 // CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.CreateTodoInput) (*models.Todo, error) {
+func (r *mutationResolver) CreateTodo(ctx context.Context, input model.CreateTodoInput) (*model.CreateTodoResponse, error) {
 	user := auth.GetUser(ctx)
 	if user == nil {
-		return &models.Todo{}, view.NewUnauthorizedView(fmt.Errorf("unauthorized error"))
+		return nil, view.NewUnauthorizedView(fmt.Errorf("unauthorized error"))
 	}
 
 	return r.todoService.CreateTodo(ctx, input, user.ID)
