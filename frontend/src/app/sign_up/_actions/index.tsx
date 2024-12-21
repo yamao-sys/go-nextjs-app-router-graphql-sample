@@ -1,8 +1,11 @@
 'use server';
 
 import { getClient } from '@/configs/apolloClient';
-// import { revalidatePath } from 'next/cache';
-import { SignUpMutation, SignUpDocument, SignUpMutationVariables } from '../__generated__/page';
+import {
+  SignUpDocument,
+  SignUpMutation,
+  SignUpMutationVariables,
+} from '../_components/SignUpForm/__generated__';
 
 export const postSignUp = async (params: SignUpMutationVariables) => {
   const client = await getClient();

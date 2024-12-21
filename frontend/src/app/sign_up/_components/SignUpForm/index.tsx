@@ -1,11 +1,42 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { FC, useState } from 'react';
 import { SignUpInput } from '@/graphql/__generated__/graphql-schema-types';
 import { BoxInputForm } from '@/components/molucules/BoxInputForm';
 import { SubmitButton } from '@/components/molucules/SubmitButton';
 import { postSignUp } from '../../_actions';
-import { SignUp_ValidationErrorFragment } from '../../__generated__/page';
+import { gql } from '@apollo/client';
+import { SignUp_ValidationErrorFragment } from './__generated__';
+
+gql`
+  mutation signUp($input: SignUpInput!) {
+    signUp(input: $input) {
+      user {
+        ...SignUp_User
+      }
+      validationErrors {
+        ...SignUp_ValidationError
+      }
+    }
+  }
+`;
+
+gql`
+  fragment SignUp_User on User {
+    id
+    name
+    email
+  }
+`;
+
+gql`
+  fragment SignUp_ValidationError on SignUpValidationError {
+    name
+    email
+    password
+  }
+`;
 
 const INITIAL_SIGN_UP_INPUT = {
   name: '',

@@ -1,13 +1,23 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { SignInInput } from '@/graphql/__generated__/graphql-schema-types';
 import { FC, useState } from 'react';
-import { SignInMutation } from '../../__generated__/page';
 import { postSignIn } from '../../_actions';
 import { BoxInputForm } from '@/components/molucules/BoxInputForm';
 import { ValidationErrorMessages } from '@/components/molucules/ValidationErrorMessages';
 import { SubmitButton } from '@/components/molucules/SubmitButton';
 import { redirect } from 'next/navigation';
+import { gql } from '@apollo/client';
+import { SignInMutation } from './__generated__';
+
+gql`
+  mutation signIn($input: SignInInput!) {
+    signIn(input: $input) {
+      validationError
+    }
+  }
+`;
 
 const INITIAL_SIGN_IN_INPUT = {
   email: '',

@@ -1,7 +1,7 @@
 'use client';
 
-import { createTodo } from '@/app/todos/_actions/todo';
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { createTodo } from '@/app/todos/_actions/todo';
 import { BoxInputForm } from '@/components/molucules/BoxInputForm';
 import { SubmitButton } from '@/components/molucules/SubmitButton';
 import { CreateTodoInput } from '@/graphql/__generated__/graphql-schema-types';
