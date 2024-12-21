@@ -20,7 +20,7 @@ type TodoService interface {
 	CreateTodo(ctx context.Context, requestParams model.CreateTodoInput, userID int) (*model.CreateTodoResponse, error)
 	FetchTodoLists(ctx context.Context, userID int) ([]*models.Todo, error)
 	FetchTodo(ctx context.Context, id int, userID int) (*models.Todo, error)
-	UpdateTodo(ctx context.Context, id int, requestParams model.UpdateTodoInput, userID int) (*models.Todo, error)
+	UpdateTodo(ctx context.Context, id int, requestParams model.UpdateTodoInput, userID int) (*model.UpdateTodoResponse, error)
 	DeleteTodo(ctx context.Context, id int, userID int) (string, error)
 }
 
@@ -36,8 +36,21 @@ func (ts *todoService) CreateTodo(ctx context.Context, requestParams model.Creat
 	// NOTE: バリデーションチェック
 	validationErrors := validator.ValidateCreateTodo(requestParams)
 	if validationErrors != nil {
-		errors := ts.NewValidationErrorView(validationErrors)
-		return &model.CreateTodoResponse{ ID: "", ValidationErrors: errors }, nil
+		resValidationErrors := model.CreateTodoValidationError{}
+
+		if errors, ok := validationErrors.(validation.Errors); ok {
+			// NOTE: レスポンス用の構造体にマッピング
+			for field, err := range errors {
+				messages := []string{err.Error()}
+				switch field {
+				case "title":
+					resValidationErrors.Title = messages
+				case "content":
+					resValidationErrors.Content = messages
+				}
+			}
+		}
+		return &model.CreateTodoResponse{ ID: "", ValidationErrors: &resValidationErrors }, nil
 	}
 
 	todo := &models.Todo{}
@@ -71,16 +84,30 @@ func (ts *todoService) FetchTodo(ctx context.Context, id int, userID int) (*mode
 	return todo, nil
 }
 
-func (ts *todoService) UpdateTodo(ctx context.Context, id int, requestParams model.UpdateTodoInput, userID int) (*models.Todo, error) {
+func (ts *todoService) UpdateTodo(ctx context.Context, id int, requestParams model.UpdateTodoInput, userID int) (*model.UpdateTodoResponse, error) {
 	todo, err := models.Todos(qm.Where("id = ? AND user_id = ?", id, userID)).One(ctx, ts.db)
 	if err != nil {
-		return &models.Todo{}, view.NewNotFoundView(err)
+		return &model.UpdateTodoResponse{ ID: "", ValidationErrors: &model.UpdateTodoValidationError{} }, view.NewNotFoundView(err)
 	}
 
 	// NOTE: バリデーションチェック
 	validationErrors := validator.ValidateUpdateTodo(requestParams)
 	if validationErrors != nil {
-		return &models.Todo{}, view.NewBadRequestView(validationErrors)
+		resValidationErrors := model.UpdateTodoValidationError{}
+
+		if errors, ok := validationErrors.(validation.Errors); ok {
+			// NOTE: レスポンス用の構造体にマッピング
+			for field, err := range errors {
+				messages := []string{err.Error()}
+				switch field {
+				case "title":
+					resValidationErrors.Title = messages
+				case "content":
+					resValidationErrors.Content = messages
+				}
+			}
+		}
+		return &model.UpdateTodoResponse{ ID: "", ValidationErrors: &resValidationErrors }, nil
 	}
 
 	todo.Title = requestParams.Title
@@ -89,9 +116,9 @@ func (ts *todoService) UpdateTodo(ctx context.Context, id int, requestParams mod
 	// NOTE: Update処理
 	_, updateError := todo.Update(ctx, ts.db, boil.Infer())
 	if updateError != nil {
-		return &models.Todo{}, view.NewInternalServerErrorView(updateError)
+		return &model.UpdateTodoResponse{ ID: "", ValidationErrors: &model.UpdateTodoValidationError{} }, view.NewInternalServerErrorView(updateError)
 	}
-	return todo, nil
+	return &model.UpdateTodoResponse{ ID: strconv.Itoa(todo.ID), ValidationErrors: &model.UpdateTodoValidationError{} }, nil
 }
 
 func (ts *todoService) DeleteTodo(ctx context.Context, id int, userID int) (string, error) {
@@ -105,23 +132,4 @@ func (ts *todoService) DeleteTodo(ctx context.Context, id int, userID int) (stri
 		return strconv.Itoa(id), view.NewInternalServerErrorView(deleteError)
 	}
 	return strconv.Itoa(id), nil
-}
-
-func (ts *todoService) NewValidationErrorView(err error) *model.CreateTodoValidationError {
-	validationErrors := model.CreateTodoValidationError{}
-
-	if errors, ok := err.(validation.Errors); ok {
-		// NOTE: レスポンス用の構造体にマッピング
-		for field, err := range errors {
-			messages := []string{err.Error()}
-			switch field {
-			case "title":
-				validationErrors.Title = messages
-			case "content":
-				validationErrors.Content = messages
-			}
-		}
-	}
-
-	return &validationErrors
 }

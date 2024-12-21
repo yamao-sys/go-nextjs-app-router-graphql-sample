@@ -27,10 +27,10 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.CreateTod
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
-func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.UpdateTodoInput) (*models.Todo, error) {
+func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.UpdateTodoInput) (*model.UpdateTodoResponse, error) {
 	user := auth.GetUser(ctx)
 	if user == nil {
-		return &models.Todo{}, view.NewUnauthorizedView(fmt.Errorf("unauthorized error"))
+		return nil, view.NewUnauthorizedView(fmt.Errorf("unauthorized error"))
 	}
 
 	intID, _ := strconv.Atoi(id)

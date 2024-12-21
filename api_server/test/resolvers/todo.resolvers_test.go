@@ -379,11 +379,11 @@ func (s *TestTodoResolverSuite) TestUpdateTodo_Unauthorized() {
                 title: "test updated title 1",
                 content: "test updated content 1",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                id
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -416,11 +416,11 @@ func (s *TestTodoResolverSuite) TestUpdateTodo() {
                 title: "test updated title 1",
                 content: "test updated content 1",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                id
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -432,9 +432,7 @@ func (s *TestTodoResolverSuite) TestUpdateTodo() {
 	testTodoGraphQLServerHandler.ServeHTTP(res, req)
 
 	assert.Equal(s.T(), 200, res.Code)
-	responseBody := make(map[string]interface{})
-	_ = json.Unmarshal(res.Body.Bytes(), &responseBody)
-	assert.Contains(s.T(), responseBody["data"], "updateTodo")
+	assert.Contains(s.T(), res.Body.String(), "\"validationErrors\":{\"title\":[],\"content\":[]}")
 
 	// NOTE: TODOが更新されていることの確認
 	if err := testTodo.Reload(ctx, DBCon); err != nil {
@@ -465,11 +463,11 @@ func (s *TestTodoResolverSuite) TestUpdateTodo_NotFound() {
                 title: "test updated title 1",
                 content: "test updated content 1",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                id
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -503,11 +501,11 @@ func (s *TestTodoResolverSuite) TestUpdateTodo_ValidationError() {
                 title: "",
                 content: "test updated content 1",
             }) {
-                id,
-                title,
-                content,
-                createdAt,
-				updatedAt
+                id
+                validationErrors {
+					title
+					content
+				}
             }
         }`,
 	}
@@ -519,9 +517,7 @@ func (s *TestTodoResolverSuite) TestUpdateTodo_ValidationError() {
 	testTodoGraphQLServerHandler.ServeHTTP(res, req)
 
 	assert.Equal(s.T(), 200, res.Code)
-	responseBody := make(map[string]([1]map[string]map[string]interface{}))
-	_ = json.Unmarshal(res.Body.Bytes(), &responseBody)
-	assert.Equal(s.T(), float64(400), responseBody["errors"][0]["extensions"]["code"])
+	assert.Contains(s.T(), res.Body.String(), "\"validationErrors\":{\"title\":[\"タイトルは必須入力です。\"],\"content\":[]}")
 }
 
 func (s *TestTodoResolverSuite) TestDeleteTodo_Unauthorized() {

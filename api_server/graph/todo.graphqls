@@ -22,9 +22,19 @@ type CreateTodoValidationError {
 	content: [String!]!
 }
 
+type UpdateTodoValidationError {
+	title: [String!]!
+	content: [String!]!
+}
+
 type CreateTodoResponse {
 	id: ID!
 	validationErrors: CreateTodoValidationError!
+}
+
+type UpdateTodoResponse {
+	id: ID!
+	validationErrors: UpdateTodoValidationError!
 }
 
 extend type Query {
@@ -34,6 +44,6 @@ extend type Query {
 
 extend type Mutation {
 	createTodo(input: CreateTodoInput!): CreateTodoResponse!
-	updateTodo(id: ID!, input: UpdateTodoInput!): Todo!
+	updateTodo(id: ID!, input: UpdateTodoInput!): UpdateTodoResponse!
 	deleteTodo(id: ID!): ID!
 }

@@ -61,3 +61,13 @@ type UpdateTodoInput struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }
+
+type UpdateTodoResponse struct {
+	ID               string                     `json:"id"`
+	ValidationErrors *UpdateTodoValidationError `json:"validationErrors"`
+}
+
+type UpdateTodoValidationError struct {
+	Title   []string `json:"title"`
+	Content []string `json:"content"`
+}
