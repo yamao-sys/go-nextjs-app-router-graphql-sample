@@ -47,7 +47,7 @@ export type Mutation = {
   deleteTodo: Scalars['ID']['output'];
   signIn: SignInResponse;
   signUp: SignUpResponse;
-  updateTodo: Todo;
+  updateTodo: UpdateTodoResponse;
 };
 
 export type MutationCreateTodoArgs = {
@@ -124,6 +124,18 @@ export type Todo = {
 export type UpdateTodoInput = {
   content: Scalars['String']['input'];
   title: Scalars['String']['input'];
+};
+
+export type UpdateTodoResponse = {
+  __typename?: 'UpdateTodoResponse';
+  id: Scalars['ID']['output'];
+  validationErrors: UpdateTodoValidationError;
+};
+
+export type UpdateTodoValidationError = {
+  __typename?: 'UpdateTodoValidationError';
+  content: Array<Scalars['String']['output']>;
+  title: Array<Scalars['String']['output']>;
 };
 
 export type User = {

@@ -1,8 +1,11 @@
+'use client';
+
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { gql } from '@apollo/client';
 import { FC } from 'react';
 import { TodosList_TodoFragment } from './__generated__';
 import { BaseButton } from '@/components/atoms/BaseButton';
+import { useRouter } from 'next/navigation';
 
 gql`
   fragment TodosList_Todo on Todo {
@@ -18,6 +21,10 @@ type Props = {
 };
 
 export const TodosList: FC<Props> = ({ todos }: Props) => {
+  const router = useRouter();
+
+  const handleRouteToEditPage = (id: string) => router.push(`/todos/${id}`);
+
   return (
     <>
       {!todos.length ? (
@@ -35,7 +42,7 @@ export const TodosList: FC<Props> = ({ todos }: Props) => {
                     labelText='編集する'
                     color='green'
                     additionalStyle='text-xs lg:text-sm'
-                    // onClick={() => handleRouteToEditPage(readingRecord.id)}
+                    onClick={() => handleRouteToEditPage(todo.id)}
                   />
                   <BaseButton
                     labelText='削除する'
