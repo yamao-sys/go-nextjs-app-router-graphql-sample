@@ -15,6 +15,16 @@ type CreateTodoInput struct {
 	Content string `json:"content"`
 }
 
+type CreateTodoResponse struct {
+	ID               string                     `json:"id"`
+	ValidationErrors *CreateTodoValidationError `json:"validationErrors"`
+}
+
+type CreateTodoValidationError struct {
+	Title   []string `json:"title"`
+	Content []string `json:"content"`
+}
+
 type Mutation struct {
 }
 
@@ -50,4 +60,14 @@ type SignUpValidationError struct {
 type UpdateTodoInput struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
+}
+
+type UpdateTodoResponse struct {
+	ID               string                     `json:"id"`
+	ValidationErrors *UpdateTodoValidationError `json:"validationErrors"`
+}
+
+type UpdateTodoValidationError struct {
+	Title   []string `json:"title"`
+	Content []string `json:"content"`
 }

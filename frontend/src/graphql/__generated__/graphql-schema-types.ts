@@ -29,13 +29,25 @@ export type CreateTodoInput = {
   title: Scalars['String']['input'];
 };
 
+export type CreateTodoResponse = {
+  __typename?: 'CreateTodoResponse';
+  id: Scalars['ID']['output'];
+  validationErrors: CreateTodoValidationError;
+};
+
+export type CreateTodoValidationError = {
+  __typename?: 'CreateTodoValidationError';
+  content: Array<Scalars['String']['output']>;
+  title: Array<Scalars['String']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createTodo: Todo;
+  createTodo: CreateTodoResponse;
   deleteTodo: Scalars['ID']['output'];
   signIn: SignInResponse;
   signUp: SignUpResponse;
-  updateTodo: Todo;
+  updateTodo: UpdateTodoResponse;
 };
 
 export type MutationCreateTodoArgs = {
@@ -112,6 +124,18 @@ export type Todo = {
 export type UpdateTodoInput = {
   content: Scalars['String']['input'];
   title: Scalars['String']['input'];
+};
+
+export type UpdateTodoResponse = {
+  __typename?: 'UpdateTodoResponse';
+  id: Scalars['ID']['output'];
+  validationErrors: UpdateTodoValidationError;
+};
+
+export type UpdateTodoValidationError = {
+  __typename?: 'UpdateTodoValidationError';
+  content: Array<Scalars['String']['output']>;
+  title: Array<Scalars['String']['output']>;
 };
 
 export type User = {

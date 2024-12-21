@@ -61,20 +61,3 @@ func (r *userResolver) NameAndEmail(ctx context.Context, obj *models.User) (stri
 func (r *Resolver) User() generated1.UserResolver { return &userResolver{r} }
 
 type userResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CheckSignedIn(ctx context.Context) (*model.CheckSignedInResponse, error) {
-	user := auth.GetUser(ctx)
-	if user == nil {
-		return &model.CheckSignedInResponse{IsSignedIn: false}, nil
-	}
-
-	return &model.CheckSignedInResponse{IsSignedIn: true}, nil
-}
-*/

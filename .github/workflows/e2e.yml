@@ -67,7 +67,7 @@ jobs:
         working-directory: ./frontend/src
         env:
           CI: true
-        run: npm run test
+        run: npm run e2e
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

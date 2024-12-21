@@ -18,5 +18,5 @@ test('SignIn Successfully', async ({ page }) => {
   await page.getByRole('button', { name: 'ログインする' }).click();
 
   await page.waitForURL('/todos');
-  expect(page).toHaveURL('/todos');
+  await expect(page).toHaveURL('/todos');
 });
