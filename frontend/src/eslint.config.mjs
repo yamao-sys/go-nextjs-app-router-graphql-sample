@@ -17,8 +17,8 @@ const eslintConfig = [
     rules: {
       ...eslintConfigPrettier.rules, // prettierConfigからルールを追加
     },
-    ignorePatterns: ['app/**/__generated__/**/*.ts'],
   },
+  { ignores: ['app/**/__generated__/**/*.ts'] },
 ];
 
 export default eslintConfig;
