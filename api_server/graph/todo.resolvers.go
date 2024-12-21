@@ -41,7 +41,7 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input mode
 func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (string, error) {
 	user := auth.GetUser(ctx)
 	if user == nil {
-		return id, view.NewUnauthorizedView(fmt.Errorf("unauthorized error"))
+		return "", view.NewUnauthorizedView(fmt.Errorf("unauthorized error"))
 	}
 
 	intID, _ := strconv.Atoi(id)

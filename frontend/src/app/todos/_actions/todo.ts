@@ -5,7 +5,11 @@ import {
   FetchTodoListsDocument,
   FetchTodoListsQuery,
 } from '../_components/Todos/TodosTemplate/__generated__';
-import { TodosList_TodoFragment } from '../_components/Todos/TodosList/__generated__';
+import {
+  DeleteTodoDocument,
+  DeleteTodoMutation,
+  TodosList_TodoFragment,
+} from '../_components/Todos/TodosList/__generated__';
 import { CreateTodoInput, UpdateTodoInput } from '@/graphql/__generated__/graphql-schema-types';
 import {
   CreateTodoDocument,
@@ -77,4 +81,20 @@ export const updateTodo = async (
   }
 
   return data.updateTodo;
+};
+
+export const deleteTodo = async (id: string): Promise<DeleteTodoMutation['deleteTodo']> => {
+  const client = await getClient();
+
+  const { data } = await client.mutate<DeleteTodoMutation>({
+    mutation: DeleteTodoDocument,
+    variables: {
+      id,
+    },
+  });
+  if (!data) {
+    throw new Error();
+  }
+
+  return data.deleteTodo;
 };

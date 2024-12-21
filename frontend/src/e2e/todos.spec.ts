@@ -64,3 +64,16 @@ test('Update Todo', async () => {
   await expect(page.getByRole('button', { name: '編集する' })).toBeVisible();
   await expect(page.getByRole('button', { name: '削除する' })).toBeVisible();
 });
+
+test('Delete Todo', async () => {
+  await page.goto('/todos');
+
+  page.on('dialog', (dialog) => {
+    dialog.accept();
+  });
+  await page.getByRole('button', { name: '削除する' }).click();
+
+  await page.waitForLoadState();
+
+  await expect(page.getByText('まだ登録済みTodoが0件です。')).toBeVisible();
+});

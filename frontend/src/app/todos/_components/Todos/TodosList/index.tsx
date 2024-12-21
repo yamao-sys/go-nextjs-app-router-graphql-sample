@@ -5,7 +5,8 @@ import { gql } from '@apollo/client';
 import { FC } from 'react';
 import { TodosList_TodoFragment } from './__generated__';
 import { BaseButton } from '@/components/atoms/BaseButton';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+import { deleteTodo } from '@/app/todos/_actions/todo';
 
 gql`
   fragment TodosList_Todo on Todo {
@@ -13,6 +14,12 @@ gql`
     title
     createdAt
     updatedAt
+  }
+`;
+
+gql`
+  mutation deleteTodo($id: ID!) {
+    deleteTodo(id: $id)
   }
 `;
 
@@ -24,6 +31,18 @@ export const TodosList: FC<Props> = ({ todos }: Props) => {
   const router = useRouter();
 
   const handleRouteToEditPage = (id: string) => router.push(`/todos/${id}`);
+
+  const handleDeleteTodo = async (id: string) => {
+    const title = todos.find((todo) => todo.id === id);
+    if (!window.confirm(`${title?.title}を本当に削除しますか?`)) {
+      return;
+    }
+
+    await deleteTodo(id);
+
+    window.alert(`${title?.title}の削除に成功しました!`);
+    redirect('/todos');
+  };
 
   return (
     <>
@@ -48,7 +67,7 @@ export const TodosList: FC<Props> = ({ todos }: Props) => {
                     labelText='削除する'
                     color='red'
                     additionalStyle='ml-4 text-xs lg:text-sm'
-                    // onClick={() => handleDeleteReadingRecord(readingRecord.id)}
+                    onClick={() => handleDeleteTodo(todo.id)}
                   />
                 </div>
               </div>
