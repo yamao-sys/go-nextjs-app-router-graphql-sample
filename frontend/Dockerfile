@@ -6,6 +6,6 @@ COPY ./src/package.json /src/package.json
 
 RUN npm install
 RUN npx playwright install
-RUN npx playwright install-deps 
+RUN npx playwright install-deps
 
 CMD sh -c "npm run dev"
