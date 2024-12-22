@@ -200,13 +200,13 @@ godotenv -f /app/.env.test.local sql-migrate up -env="mysql"
 ```
 
 ### テスト実行
-## バックエンドの単体テスト
+#### バックエンドの単体テスト
 api_serverコンテナに入った上で、以下のコマンドを実行
 ```
 godotenv -f /app/.env.test.local go test -v ./...
 ```
 
-## ローカルでのE2Eテスト
+#### ローカルでのE2Eテスト
 ```
 sh run-e2e-local.sh
 ```
