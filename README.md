@@ -210,3 +210,21 @@ godotenv -f /app/.env.test.local go test -v ./...
 ```
 sh run-e2e-local.sh
 ```
+
+## 参考
+
+- App Router の Apollo Client
+  - https://tech.nri-net.com/entry/nextjs_and_apolloclient
+- Apollo Client で Header を扱う
+  - https://zenn.dev/yosipy/articles/6bbd9c64b6ad74
+- Fragment Colocation
+  - https://zenn.dev/moneyforward/articles/20221211-fragment-colocation
+- GraphQL におけるエラーハンドリング
+  - https://zenn.dev/coconala/articles/e8172bdd3b342b
+- RSC のテスト
+  - https://azukiazusa.dev/blog/server-components-testing/
+- Playwright の構築
+  - https://qiita.com/pecobita/items/fbed30f3d7e4885591da
+  - https://kojirooooocks.hatenablog.com/entry/2022/11/26/203503
+- POM
+  - https://tech.smarthr.jp/entry/2024/06/18/140311
