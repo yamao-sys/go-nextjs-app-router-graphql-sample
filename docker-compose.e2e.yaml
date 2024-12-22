@@ -1,0 +1,59 @@
+version: '3.9'
+services:
+  api_server_test:
+    container_name: api_server_test
+    build:
+      context: ./api_server
+    volumes:
+      - ./api_server:/app
+    ports:
+      - 8081:8081
+    depends_on:
+      - db
+    tty: true # コンテナの永続化
+    environment:
+      - TZ=Asia/Tokyo
+    command: 'godotenv -f .env.test.local go run server.go'
+    networks:
+      - container-link
+
+  frontend_test:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/src
+      - ./api_server/graph:/src/graph
+    ports:
+      - 3001:3001
+    environment:
+      - DISPLAY=0
+      - WATCHPACK_POLLING=true
+      - NODE_ENV=test
+      - PORT=3001
+    restart: always
+    tty: true
+    stdin_open: true
+    depends_on:
+      - api_server_test
+    entrypoint: sh -c 'sh e2e-entrypoint.sh & npm run e2e'
+    networks:
+      - container-link
+
+  db:
+    image: mysql:8.0.28
+    container_name: db
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=go_nextjs_graphql_practice
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql:/var/lib/mysql
+    networks:
+      - container-link
+
+networks:
+  container-link:
+    name: e2e-local-network
+    driver: bridge
