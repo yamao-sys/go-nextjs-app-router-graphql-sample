@@ -18,6 +18,7 @@ services:
     build: ./frontend
     volumes:
       - ./frontend/src:/src
+      - node_modules:/src/node_modules
       - ./api_server/graph:/src/graph
     ports:
       - 3002:3000
@@ -41,3 +42,6 @@ services:
     volumes:
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./mysql:/var/lib/mysql
+
+volumes:
+  node_modules:
