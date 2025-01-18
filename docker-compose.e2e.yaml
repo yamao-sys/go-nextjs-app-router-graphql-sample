@@ -34,7 +34,6 @@ services:
     stdin_open: true
     depends_on:
       - api_server_test
-    entrypoint: sh -c 'sh e2e-entrypoint.sh & npm run e2e'
     networks:
       - container-link
 
